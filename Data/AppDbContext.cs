@@ -118,7 +118,7 @@ namespace CertifiedStaff.Data
             });
 
             // =========================
-            // CERTIFICATION (CLAVE DEL MODELO)
+            // CERTIFICATION
             // =========================
             modelBuilder.Entity<Certification>(entity =>
             {
