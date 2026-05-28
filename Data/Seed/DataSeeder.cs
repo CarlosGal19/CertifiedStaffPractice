@@ -19,6 +19,7 @@ public class DataSeeder
         await SeedProductionLineStations();
         await SeedSupervisors();
         await SeedEmployees();
+        await SeedCertifications();
     }
 
     private async Task SeedShifts()
