@@ -1,5 +1,6 @@
 using CertifiedStaff.Data;
 using CertifiedStaff.DTO;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -27,15 +28,21 @@ public class IndexModel : PageModel
     public int CompletedTotal { get; set; }
     public int ExpiredTotal { get; set; }
 
+    [BindProperty(SupportsGet = true)]
+    public int? ProductionLineId { get; set; }
+
+    [BindProperty(SupportsGet = true)]
+    public int? StationId { get; set; }
+
+    [BindProperty(SupportsGet = true)]
+    public int? SupervisorId { get; set; }
+
     public IndexModel(AppDbContext context)
     {
         _context = context;
     }
 
     public void OnGet(
-        int? productionLineId,
-        int? stationId,
-        int? supervisorId,
         int ongoingPage = 1,
         int completedPage = 1,
         int expiredPage = 1)
@@ -45,7 +52,7 @@ public class IndexModel : PageModel
         ExpiredPage = expiredPage;
 
         LoadFilters();
-        LoadData(productionLineId, stationId, supervisorId);
+        LoadData(ProductionLineId, StationId, SupervisorId);
     }
 
     private void LoadData(
