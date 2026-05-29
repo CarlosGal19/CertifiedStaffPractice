@@ -43,6 +43,21 @@
             <h5 class="p-2 mb-0 text-white" style="background-color:#2a2a2a;">
                 Ongoing Certificates
             </h5>
+            <nav>
+                <ul class="pagination">
+
+                    @for (int i = 1; i <= Math.Ceiling(Model.OngoingTotal / (double)Model.PageSize); i++)
+                    {
+                        <li class="page-item @(i == Model.OngoingPage ? "active" : "")">
+                            <a class="page-link" asp-page-handler="Data" asp-route-ongoingPage="@i"
+                               asp-route-completedPage="@Model.CompletedPage" asp-route-expiredPage="@Model.ExpiredPage">
+                                @i
+                            </a>
+                        </li>
+                    }
+
+                </ul>
+            </nav>
 
             <table class="table table-sm" style="border:1px solid #2596be; color:#2a2a2a;">
                 <thead style="background-color:#f5f5f5;">
@@ -74,6 +89,21 @@
             <h5 class="p-2 mb-0 text-white" style="background-color:#2a2a2a;">
                 Completed Certificates
             </h5>
+            <nav>
+                <ul class="pagination">
+
+                    @for (int i = 1; i <= Math.Ceiling(Model.CompletedTotal / (double)Model.PageSize); i++)
+                    {
+                        <li class="page-item @(i == Model.CompletedPage ? "active" : "")">
+                            <a class="page-link" asp-page-handler="Data" asp-route-ongoingPage="@Model.OngoingPage"
+                               asp-route-completedPage="@i" asp-route-expiredPage="@Model.ExpiredPage">
+                                @i
+                            </a>
+                        </li>
+                    }
+
+                </ul>
+            </nav>
 
             <table class="table table-sm" style="border:1px solid #2596be; color:#2a2a2a;">
                 <thead style="background-color:#f5f5f5;">
@@ -109,7 +139,21 @@
             <h5 class="p-2 mb-0 text-white" style="background-color:#2a2a2a;">
                 Expired Certificates
             </h5>
+            <nav>
+                <ul class="pagination">
 
+                    @for (int i = 1; i <= Math.Ceiling(Model.ExpiredTotal / (double)Model.PageSize); i++)
+                    {
+                        <li class="page-item @(i == Model.ExpiredPage ? "active" : "")">
+                            <a class="page-link" asp-page-handler="Data" asp-route-ongoingPage="@Model.OngoingPage"
+                               asp-route-completedPage="@Model.CompletedPage" asp-route-expiredPage="@i">
+                                @i
+                            </a>
+                        </li>
+                    }
+
+                </ul>
+            </nav>
             <table class="table table-sm" style="border:1px solid #2596be; color:#2a2a2a;">
                 <thead style="background-color:#f5f5f5;">
                     <tr>

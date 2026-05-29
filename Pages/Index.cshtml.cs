@@ -17,19 +17,43 @@ public class IndexModel : PageModel
     public List<CertificationDTO> CompletedCertificates { get; set; } = new();
     public List<CertificationDTO> ExpiredCertificates { get; set; } = new();
 
+    public readonly int PageSize = 6;
+
+    public int OngoingPage { get; set; } = 1;
+    public int CompletedPage { get; set; } = 1;
+    public int ExpiredPage { get; set; } = 1;
+
+    public int OngoingTotal { get; set; }
+    public int CompletedTotal { get; set; }
+    public int ExpiredTotal { get; set; }
+
     public IndexModel(AppDbContext context)
     {
         _context = context;
     }
 
-    public void OnGet()
+    public void OnGet(int ongoingPage = 1, int completedPage = 1, int expiredPage = 1)
     {
+        OngoingPage = ongoingPage;
+        CompletedPage = completedPage;
+        ExpiredPage = expiredPage;
+
         LoadFilters();
         LoadData();
     }
 
-    public void OnGetData(int? productionLineId, int? stationId, int? supervisorId)
+    public void OnGetData(
+        int? productionLineId,
+        int? stationId,
+        int? supervisorId,
+        int ongoingPage = 1,
+        int completedPage = 1,
+        int expiredPage = 1)
     {
+        OngoingPage = ongoingPage;
+        CompletedPage = completedPage;
+        ExpiredPage = expiredPage;
+
         LoadFilters();
         LoadData(productionLineId, stationId, supervisorId);
     }
@@ -79,18 +103,38 @@ public class IndexModel : PageModel
                 ExpirationDate = c.ExpirationDate
             });
 
+        OngoingTotal = certificationDtos.Count(c => c.CertificationDate == null);
+
+        CompletedTotal = certificationDtos.Count(c =>
+            c.CertificationDate != null &&
+            c.ExpirationDate.HasValue &&
+            c.ExpirationDate.Value > DateTime.Now);
+
+        ExpiredTotal = certificationDtos.Count(c =>
+            c.CertificationDate != null &&
+            c.ExpirationDate.HasValue &&
+            c.ExpirationDate.Value <= DateTime.Now);
+
         OngoingCertificates = certificationDtos
             .Where(c => c.CertificationDate == null)
+            .Skip((OngoingPage - 1) * PageSize)
+            .Take(PageSize)
             .ToList();
 
         CompletedCertificates = certificationDtos
             .Where(c => c.CertificationDate != null &&
-                        c.ExpirationDate > DateTime.Now)
+                        c.ExpirationDate.HasValue &&
+                        c.ExpirationDate.Value > DateTime.Now)
+            .Skip((CompletedPage - 1) * PageSize)
+            .Take(PageSize)
             .ToList();
 
         ExpiredCertificates = certificationDtos
             .Where(c => c.CertificationDate != null &&
-                        c.ExpirationDate <= DateTime.Now)
+                        c.ExpirationDate.HasValue &&
+                        c.ExpirationDate.Value <= DateTime.Now)
+            .Skip((ExpiredPage - 1) * PageSize)
+            .Take(PageSize)
             .ToList();
     }
 
