@@ -125,8 +125,8 @@ namespace CertifiedStaff.Data
                 entity.HasKey(c => c.CertificationId);
 
                 entity.Property(c => c.TrainingPercentage).IsRequired();
-                entity.Property(c => c.CertificationDate).IsRequired();
-                entity.Property(c => c.ExpirationDate).IsRequired();
+                entity.Property(c => c.CertificationDate);
+                entity.Property(c => c.ExpirationDate);
 
                 entity.Property(c => c.IsActive).HasDefaultValue(true);
                 entity.Property(c => c.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
