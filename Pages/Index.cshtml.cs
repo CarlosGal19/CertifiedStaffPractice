@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using ClosedXML.Excel;
 
 namespace CertifiedStaff.Pages;
 
@@ -170,4 +171,145 @@ public class IndexModel : PageModel
             })
             .ToList();
     }
+
+    public IActionResult OnGetExportExcel()
+    {
+        using var wb = new XLWorkbook();
+
+        // =========================
+        // Ongoing
+        // =========================
+        var ongoing = wb.Worksheets.Add("OngoingCertificates");
+
+        ongoing.Cell(1, 1).Value = "Employee";
+        ongoing.Cell(1, 2).Value = "Supervisor";
+        ongoing.Cell(1, 3).Value = "Shift";
+        ongoing.Cell(1, 4).Value = "Line / Station";
+        ongoing.Cell(1, 5).Value = "Training %";
+
+        int row = 2;
+
+        var ongoingData = _context.Certifications
+            .Where(c => c.CertificationDate == null && c.IsActive)
+            .Select(c => new
+            {
+                c.Employee.Name,
+                Supervisor = c.Employee.Shift.Supervisors
+                    .Select(s => s.Name)
+                    .FirstOrDefault() ?? "NA",
+                Shift = c.Employee.Shift.Name,
+                LineStation = c.ProductionLineStation.ProductionLine.Name + " " +
+                            c.ProductionLineStation.Station.Name,
+                c.TrainingPercentage
+            })
+            .ToList();
+
+        foreach (var item in ongoingData)
+        {
+            ongoing.Cell(row, 1).Value = item.Name;
+            ongoing.Cell(row, 2).Value = item.Supervisor;
+            ongoing.Cell(row, 3).Value = item.Shift;
+            ongoing.Cell(row, 4).Value = item.LineStation;
+            ongoing.Cell(row, 5).Value = item.TrainingPercentage;
+            row++;
+        }
+
+        // =========================
+        // Completed
+        // =========================
+        var completed = wb.Worksheets.Add("CompletedCertificates");
+
+        completed.Cell(1, 1).Value = "Employee";
+        completed.Cell(1, 2).Value = "Supervisor";
+        completed.Cell(1, 3).Value = "Shift";
+        completed.Cell(1, 4).Value = "Line / Station";
+        completed.Cell(1, 5).Value = "Certification Date";
+        completed.Cell(1, 6).Value = "Expiration Date";
+
+        row = 2;
+
+        var completedData = _context.Certifications
+            .Where(c => c.CertificationDate != null &&
+                        c.ExpirationDate.HasValue &&
+                        c.ExpirationDate.Value > DateTime.Now &&
+                        c.IsActive)
+            .Select(c => new
+            {
+                c.Employee.Name,
+                Supervisor = c.Employee.Shift.Supervisors
+                    .Select(s => s.Name)
+                    .FirstOrDefault() ?? "NA",
+                Shift = c.Employee.Shift.Name,
+                LineStation = c.ProductionLineStation.ProductionLine.Name + " " +
+                            c.ProductionLineStation.Station.Name,
+                c.CertificationDate,
+                c.ExpirationDate
+            })
+            .ToList();
+
+        foreach (var item in completedData)
+        {
+            completed.Cell(row, 1).Value = item.Name;
+            completed.Cell(row, 2).Value = item.Supervisor;
+            completed.Cell(row, 3).Value = item.Shift;
+            completed.Cell(row, 4).Value = item.LineStation;
+            completed.Cell(row, 5).Value = item.CertificationDate;
+            completed.Cell(row, 6).Value = item.ExpirationDate;
+            row++;
+        }
+
+        // =========================
+        // Expired
+        // =========================
+        var expired = wb.Worksheets.Add("ExpiredCertificates");
+
+        expired.Cell(1, 1).Value = "Employee";
+        expired.Cell(1, 2).Value = "Supervisor";
+        expired.Cell(1, 3).Value = "Shift";
+        expired.Cell(1, 4).Value = "Line / Station";
+        expired.Cell(1, 5).Value = "Certification Date";
+        expired.Cell(1, 6).Value = "Expiration Date";
+
+        row = 2;
+
+        var expiredData = _context.Certifications
+            .Where(c => c.CertificationDate != null &&
+                        c.ExpirationDate.HasValue &&
+                        c.ExpirationDate.Value <= DateTime.Now &&
+                        c.IsActive)
+            .Select(c => new
+            {
+                c.Employee.Name,
+                Supervisor = c.Employee.Shift.Supervisors
+                    .Select(s => s.Name)
+                    .FirstOrDefault() ?? "NA",
+                Shift = c.Employee.Shift.Name,
+                LineStation = c.ProductionLineStation.ProductionLine.Name + " " +
+                            c.ProductionLineStation.Station.Name,
+                c.CertificationDate,
+                c.ExpirationDate
+            })
+            .ToList();
+
+        foreach (var item in expiredData)
+        {
+            expired.Cell(row, 1).Value = item.Name;
+            expired.Cell(row, 2).Value = item.Supervisor;
+            expired.Cell(row, 3).Value = item.Shift;
+            expired.Cell(row, 4).Value = item.LineStation;
+            expired.Cell(row, 5).Value = item.CertificationDate;
+            expired.Cell(row, 6).Value = item.ExpirationDate;
+            row++;
+        }
+
+        // =========================
+        // RETURN FILE
+        // =========================
+        using var stream = new MemoryStream();
+        wb.SaveAs(stream);
+
+        return File(stream.ToArray(),
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "certifications.xlsx");
+            }
 }
