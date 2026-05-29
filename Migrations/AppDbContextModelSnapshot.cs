@@ -228,14 +228,19 @@ namespace CertifiedStaff.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SupervisorId"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("ProductionLineId")
                         .HasColumnType("int");
@@ -295,7 +300,7 @@ namespace CertifiedStaff.Migrations
                     b.HasOne("CertifiedStaff.Models.ProductionLine", "ProductionLine")
                         .WithMany("ProductionLineStations")
                         .HasForeignKey("ProductionLineId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("CertifiedStaff.Models.Station", "Station")
@@ -312,9 +317,9 @@ namespace CertifiedStaff.Migrations
             modelBuilder.Entity("CertifiedStaff.Models.Supervisor", b =>
                 {
                     b.HasOne("CertifiedStaff.Models.ProductionLine", "ProductionLine")
-                        .WithMany()
+                        .WithMany("Supervisors")
                         .HasForeignKey("ProductionLineId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("CertifiedStaff.Models.Shift", "Shift")
@@ -336,6 +341,8 @@ namespace CertifiedStaff.Migrations
             modelBuilder.Entity("CertifiedStaff.Models.ProductionLine", b =>
                 {
                     b.Navigation("ProductionLineStations");
+
+                    b.Navigation("Supervisors");
                 });
 
             modelBuilder.Entity("CertifiedStaff.Models.ProductionLineStation", b =>

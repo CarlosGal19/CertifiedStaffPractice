@@ -62,11 +62,11 @@ namespace CertifiedStaff.Migrations
                 {
                     SupervisorId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     ShiftId = table.Column<int>(type: "int", nullable: false),
                     ProductionLineId = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
                 },
                 constraints: table =>
                 {
@@ -76,7 +76,7 @@ namespace CertifiedStaff.Migrations
                         column: x => x.ProductionLineId,
                         principalTable: "ProductionLines",
                         principalColumn: "ProductionLineId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Supervisors_Shifts_ShiftId",
                         column: x => x.ShiftId,
@@ -104,7 +104,7 @@ namespace CertifiedStaff.Migrations
                         column: x => x.ProductionLineId,
                         principalTable: "ProductionLines",
                         principalColumn: "ProductionLineId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ProductionLineStations_Stations_StationId",
                         column: x => x.StationId,
