@@ -8,4 +8,6 @@ public class ProductionLine
     public DateTime CreatedAt {get; set;} = DateTime.UtcNow;
 
     public ICollection<ProductionLineStation> ProductionLineStations { get; set; } = new List<ProductionLineStation>();
+
+    public ICollection<Supervisor> Supervisors {get; set;} = new List<Supervisor>();
 }
