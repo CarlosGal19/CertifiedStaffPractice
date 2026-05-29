@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CertifiedStaff.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260528234133_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260528235736_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,7 +33,7 @@ namespace CertifiedStaff.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CertificationId"));
 
-                    b.Property<DateTime>("CertificationDate")
+                    b.Property<DateTime?>("CertificationDate")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("CreatedAt")
@@ -44,7 +44,7 @@ namespace CertifiedStaff.Migrations
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("ExpirationDate")
+                    b.Property<DateTime?>("ExpirationDate")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsActive")

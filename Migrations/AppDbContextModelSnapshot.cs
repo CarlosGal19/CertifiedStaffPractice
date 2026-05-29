@@ -30,7 +30,7 @@ namespace CertifiedStaff.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CertificationId"));
 
-                    b.Property<DateTime>("CertificationDate")
+                    b.Property<DateTime?>("CertificationDate")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("CreatedAt")
@@ -41,7 +41,7 @@ namespace CertifiedStaff.Migrations
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("ExpirationDate")
+                    b.Property<DateTime?>("ExpirationDate")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsActive")
