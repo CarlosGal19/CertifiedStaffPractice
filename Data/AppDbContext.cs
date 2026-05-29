@@ -62,7 +62,24 @@ namespace CertifiedStaff.Data
                 .HasMany(pl => pl.ProductionLineStations)
                 .WithOne(ps => ps.ProductionLine)
                 .HasForeignKey(ps => ps.ProductionLineId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ProductionLine>()
+                .HasMany(pl => pl.Supervisors)
+                .WithOne(ps => ps.ProductionLine)
+                .HasForeignKey(ps => ps.ProductionLineId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // =========================
+            // SUPERVISOR
+            // =========================
+            modelBuilder.Entity<Supervisor>(entity =>
+            {
+                entity.HasKey(s => s.SupervisorId);
+                entity.Property(p => p.Name).IsRequired().HasMaxLength(100);
+                entity.Property(p => p.IsActive).HasDefaultValue(true);
+                entity.Property(p => p.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+            });
 
             // =========================
             // STATION
