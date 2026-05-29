@@ -1,6 +1,8 @@
 using CertifiedStaff.Data;
+using CertifiedStaff.DTO;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace CertifiedStaff.Pages;
 
@@ -9,14 +11,90 @@ public class IndexModel : PageModel
     private readonly AppDbContext _context;
 
     public List<SelectListItem> ProductionLines { get; set; } = new();
-    public List<SelectListItem> Stations {get; set;} = new();
-    public List<SelectListItem> Supervisors {get; set;} = new();
+    public List<SelectListItem> Stations { get; set; } = new();
+    public List<SelectListItem> Supervisors { get; set; } = new();
+    public List<CertificationDTO> OngoingCertificates { get; set; } = new();
+    public List<CertificationDTO> CompletedCertificates { get; set; } = new();
+    public List<CertificationDTO> ExpiredCertificates { get; set; } = new();
 
     public IndexModel(AppDbContext context)
     {
         _context = context;
     }
+
     public void OnGet()
+    {
+        LoadFilters();
+        LoadData();
+    }
+
+    public void OnGetData(int? productionLineId, int? stationId, int? supervisorId)
+    {
+        LoadFilters();
+        LoadData(productionLineId, stationId, supervisorId);
+    }
+
+    private void LoadData(
+        int? productionLineId = null,
+        int? stationId = null,
+        int? supervisorId = null)
+    {
+        var certifications = _context.Certifications
+            .AsNoTracking()
+            .Where(c => c.IsActive);
+
+        if (productionLineId.HasValue)
+        {
+            certifications = certifications.Where(c =>
+                c.ProductionLineStation.ProductionLineId == productionLineId.Value);
+        }
+
+        if (stationId.HasValue)
+        {
+            certifications = certifications.Where(c =>
+                c.ProductionLineStation.StationId == stationId.Value);
+        }
+
+        if (supervisorId.HasValue)
+        {
+            certifications = certifications.Where(c =>
+                c.ProductionLineStation.ProductionLine.Supervisors
+                    .Any(s => s.SupervisorId == supervisorId.Value));
+        }
+
+        var certificationDtos = certifications
+            .Select(c => new CertificationDTO
+            {
+                CertificationId = c.CertificationId,
+                Employee = c.Employee.Name,
+                Supervisor = c.ProductionLineStation.ProductionLine.Supervisors
+                    .Select(s => s.Name)
+                    .FirstOrDefault() ?? "NA",
+                Shift = c.Employee.Shift.Name,
+                ProductionLineStation =
+                    c.ProductionLineStation.ProductionLine.Name + " " +
+                    c.ProductionLineStation.Station.Name,
+                TrainingPercentage = c.TrainingPercentage,
+                CertificationDate = c.CertificationDate,
+                ExpirationDate = c.ExpirationDate
+            });
+
+        OngoingCertificates = certificationDtos
+            .Where(c => c.CertificationDate == null)
+            .ToList();
+
+        CompletedCertificates = certificationDtos
+            .Where(c => c.CertificationDate != null &&
+                        c.ExpirationDate > DateTime.Now)
+            .ToList();
+
+        ExpiredCertificates = certificationDtos
+            .Where(c => c.CertificationDate != null &&
+                        c.ExpirationDate <= DateTime.Now)
+            .ToList();
+    }
+
+    private void LoadFilters()
     {
         ProductionLines = _context.ProductionLines
             .Where(pl => pl.IsActive)
@@ -26,6 +104,7 @@ public class IndexModel : PageModel
                 Text = pl.Name
             })
             .ToList();
+
         Stations = _context.Stations
             .Where(s => s.IsActive)
             .Select(s => new SelectListItem
@@ -34,6 +113,7 @@ public class IndexModel : PageModel
                 Text = s.Name
             })
             .ToList();
+
         Supervisors = _context.Supervisors
             .Where(s => s.IsActive)
             .Select(s => new SelectListItem
