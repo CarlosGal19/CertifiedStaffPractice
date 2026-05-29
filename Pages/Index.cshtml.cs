@@ -17,7 +17,7 @@ public class IndexModel : PageModel
     public List<CertificationDTO> CompletedCertificates { get; set; } = new();
     public List<CertificationDTO> ExpiredCertificates { get; set; } = new();
 
-    public readonly int PageSize = 6;
+    public readonly int PageSize = 5;
 
     public int OngoingPage { get; set; } = 1;
     public int CompletedPage { get; set; } = 1;

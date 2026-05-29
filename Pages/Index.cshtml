@@ -1,6 +1,39 @@
 ﻿@page
 @model IndexModel
 
+<style>
+    .pagination {
+        margin-top: 8px;
+        justify-content: flex-end;
+    }
+
+    .pagination .page-item .page-link {
+        color: #2a2a2a;
+        border: 1px solid #2596be;
+        font-size: 0.85rem;
+        padding: 4px 10px;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .pagination .page-item .page-link:hover {
+        background-color: #2596be;
+        color: #fff;
+        border-color: #2596be;
+        transform: translateY(-1px);
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: #2a2a2a;
+        border-color: #2a2a2a;
+        color: #fff;
+    }
+
+    .pagination .page-item.active .page-link:hover {
+        background-color: #1f1f1f;
+        border-color: #1f1f1f;
+    }
+</style>
+
 <div class="d-flex gap-4 align-items-start">
 
     <aside style="width: 320px;">
@@ -22,13 +55,6 @@
 
                 <select class="form-select" asp-items="Model.Supervisors">
                     <option selected>Select a supervisor</option>
-                </select>
-
-                <select class="form-select">
-                    <option selected>Select a status</option>
-                    <option>Ongoing</option>
-                    <option>Completed</option>
-                    <option>Expired</option>
                 </select>
 
             </div>
@@ -59,7 +85,7 @@
                 </ul>
             </nav>
 
-            <table class="table table-sm" style="border:1px solid #2596be; color:#2a2a2a;">
+            <table class="table table-sm" style="border:1px solid #2596be; color:#2a2a2a; border-radius: 6px;">
                 <thead style="background-color:#f5f5f5;">
                     <tr>
                         <th>Employee</th>
@@ -105,14 +131,13 @@
                 </ul>
             </nav>
 
-            <table class="table table-sm" style="border:1px solid #2596be; color:#2a2a2a;">
+            <table class="table table-sm" style="border:1px solid #2596be; color:#2a2a2a; border-radius: 6px;">
                 <thead style="background-color:#f5f5f5;">
                     <tr>
                         <th>Employee</th>
                         <th>Supervisor</th>
                         <th>Shift</th>
                         <th>Production Line / Station</th>
-                        <th>Training %</th>
                         <th>Certification Date</th>
                         <th>Expiration Date</th>
                     </tr>
@@ -125,7 +150,6 @@
                             <td>@item.Supervisor</td>
                             <td>@item.Shift</td>
                             <td>@item.ProductionLineStation</td>
-                            <td>@item.TrainingPercentage%</td>
                             <td>@item.CertificationDate</td>
                             <td>@item.ExpirationDate</td>
                         </tr>
@@ -154,14 +178,13 @@
 
                 </ul>
             </nav>
-            <table class="table table-sm" style="border:1px solid #2596be; color:#2a2a2a;">
+            <table class="table table-sm" style="border:1px solid #2596be; color:#2a2a2a; border-radius: 6px;">
                 <thead style="background-color:#f5f5f5;">
                     <tr>
                         <th>Employee</th>
                         <th>Supervisor</th>
                         <th>Shift</th>
                         <th>Production Line / Station</th>
-                        <th>Training %</th>
                         <th>Certification Date</th>
                         <th>Expiration Date</th>
                     </tr>
@@ -174,7 +197,6 @@
                             <td>@item.Supervisor</td>
                             <td>@item.Shift</td>
                             <td>@item.ProductionLineStation</td>
-                            <td>@item.TrainingPercentage%</td>
                             <td>@item.CertificationDate</td>
                             <td>@item.ExpirationDate</td>
                         </tr>
