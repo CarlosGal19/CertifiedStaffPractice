@@ -44,165 +44,170 @@
                     <h5 class="mb-0 fw-semibold">Certification Filters</h5>
                     <small class="text-muted">Filter employees by line, station, supervisor, and status</small>
                 </div>
+                <form method="get" asp-page="Index" id="filterForm">
+                    <select class="form-select" asp-items="Model.ProductionLines" name="productionLineId"
+                            onchange="document.getElementById('filterForm').submit()">
+                        <option value="">Select a line</option>
+                    </select>
 
-                <select class="form-select" asp-items="Model.ProductionLines">
-                    <option selected>Select a line</option>
-                </select>
+                    <select class="form-select" asp-items="Model.Stations" name="stationId"
+                            onchange="document.getElementById('filterForm').submit()">
+                        <option value="">Select a station</option>
+                    </select>
 
-                <select class="form-select" asp-items="Model.Stations">
-                    <option selected>Select a station</option>
-                </select>
+                    <select class="form-select" asp-items="Model.Supervisors" name="supervisorId"
+                            onchange="document.getElementById('filterForm').submit()">
+                        <option value="">Select a supervisor</option>
+                    </select>
+                </form>
 
-                <select class="form-select" asp-items="Model.Supervisors">
-                    <option selected>Select a supervisor</option>
-                </select>
 
+                </div>
             </div>
-        </div>
-    </aside>
+        </aside>
 
-    <!-- Content -->
-    <main role="main" class="flex-grow-1">
+        <!-- Content -->
+        <main role="main" class="flex-grow-1">
 
-        <!-- Ongoing -->
-        <div class="mb-4">
-            <h5 class="p-2 mb-0 text-white" style="background-color:#2a2a2a;">
-                Ongoing Certificates
-            </h5>
-            <nav>
-                <ul class="pagination">
+            <!-- Ongoing -->
+            <div class="mb-4">
+                <h5 class="p-2 mb-0 text-white" style="background-color:#2a2a2a;">
+                    Ongoing Certificates
+                </h5>
+                <nav>
+                    <ul class="pagination">
 
-                    @for (int i = 1; i <= Math.Ceiling(Model.OngoingTotal / (double)Model.PageSize); i++)
-                    {
-                        <li class="page-item @(i == Model.OngoingPage ? "active" : "")">
-                            <a class="page-link" asp-page-handler="Data" asp-route-ongoingPage="@i"
-                               asp-route-completedPage="@Model.CompletedPage" asp-route-expiredPage="@Model.ExpiredPage">
-                                @i
-                            </a>
-                        </li>
-                    }
+                        @for (int i = 1; i <= Math.Ceiling(Model.OngoingTotal / (double)Model.PageSize); i++)
+                        {
+                            <li class="page-item @(i == Model.OngoingPage ? "active" : "")">
+                                <a class="page-link" asp-route-ongoingPage="@i"
+                                   asp-route-completedPage="@Model.CompletedPage" asp-route-expiredPage="@Model.ExpiredPage">
+                                    @i
+                                </a>
+                            </li>
+                        }
 
-                </ul>
-            </nav>
+                    </ul>
+                </nav>
 
-            <table class="table table-sm" style="border:1px solid #2596be; color:#2a2a2a; border-radius: 6px;">
-                <thead style="background-color:#f5f5f5;">
-                    <tr>
-                        <th>Employee</th>
-                        <th>Supervisor</th>
-                        <th>Shift</th>
-                        <th>Production Line / Station</th>
-                        <th>Training %</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.OngoingCertificates)
-                    {
+                <table class="table table-sm" style="border:1px solid #2596be; color:#2a2a2a; border-radius: 6px;">
+                    <thead style="background-color:#f5f5f5;">
                         <tr>
-                            <td>@item.Employee</td>
-                            <td>@item.Supervisor</td>
-                            <td>@item.Shift</td>
-                            <td>@item.ProductionLineStation</td>
-                            <td>@item.TrainingPercentage%</td>
+                            <th>Employee</th>
+                            <th>Supervisor</th>
+                            <th>Shift</th>
+                            <th>Production Line / Station</th>
+                            <th>Training %</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.OngoingCertificates)
+                        {
+                            <tr>
+                                <td>@item.Employee</td>
+                                <td>@item.Supervisor</td>
+                                <td>@item.Shift</td>
+                                <td>@item.ProductionLineStation</td>
+                                <td>@item.TrainingPercentage%</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
 
-        <!-- Completed -->
-        <div class="mb-4">
-            <h5 class="p-2 mb-0 text-white" style="background-color:#2a2a2a;">
-                Completed Certificates
-            </h5>
-            <nav>
-                <ul class="pagination">
+            <!-- Completed -->
+            <div class="mb-4">
+                <h5 class="p-2 mb-0 text-white" style="background-color:#2a2a2a;">
+                    Completed Certificates
+                </h5>
+                <nav>
+                    <ul class="pagination">
 
-                    @for (int i = 1; i <= Math.Ceiling(Model.CompletedTotal / (double)Model.PageSize); i++)
-                    {
-                        <li class="page-item @(i == Model.CompletedPage ? "active" : "")">
-                            <a class="page-link" asp-page-handler="Data" asp-route-ongoingPage="@Model.OngoingPage"
-                               asp-route-completedPage="@i" asp-route-expiredPage="@Model.ExpiredPage">
-                                @i
-                            </a>
-                        </li>
-                    }
+                        @for (int i = 1; i <= Math.Ceiling(Model.CompletedTotal / (double)Model.PageSize); i++)
+                        {
+                            <li class="page-item @(i == Model.CompletedPage ? "active" : "")">
+                                <a class="page-link" asp-route-ongoingPage="@Model.OngoingPage"
+                                   asp-route-completedPage="@i" asp-route-expiredPage="@Model.ExpiredPage">
+                                    @i
+                                </a>
+                            </li>
+                        }
 
-                </ul>
-            </nav>
+                    </ul>
+                </nav>
 
-            <table class="table table-sm" style="border:1px solid #2596be; color:#2a2a2a; border-radius: 6px;">
-                <thead style="background-color:#f5f5f5;">
-                    <tr>
-                        <th>Employee</th>
-                        <th>Supervisor</th>
-                        <th>Shift</th>
-                        <th>Production Line / Station</th>
-                        <th>Certification Date</th>
-                        <th>Expiration Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.CompletedCertificates)
-                    {
+                <table class="table table-sm" style="border:1px solid #2596be; color:#2a2a2a; border-radius: 6px;">
+                    <thead style="background-color:#f5f5f5;">
                         <tr>
-                            <td>@item.Employee</td>
-                            <td>@item.Supervisor</td>
-                            <td>@item.Shift</td>
-                            <td>@item.ProductionLineStation</td>
-                            <td>@item.CertificationDate</td>
-                            <td>@item.ExpirationDate</td>
+                            <th>Employee</th>
+                            <th>Supervisor</th>
+                            <th>Shift</th>
+                            <th>Production Line / Station</th>
+                            <th>Certification Date</th>
+                            <th>Expiration Date</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.CompletedCertificates)
+                        {
+                            <tr>
+                                <td>@item.Employee</td>
+                                <td>@item.Supervisor</td>
+                                <td>@item.Shift</td>
+                                <td>@item.ProductionLineStation</td>
+                                <td>@item.CertificationDate</td>
+                                <td>@item.ExpirationDate</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
 
-        <!-- Expired -->
-        <div class="mb-4">
-            <h5 class="p-2 mb-0 text-white" style="background-color:#2a2a2a;">
-                Expired Certificates
-            </h5>
-            <nav>
-                <ul class="pagination">
+            <!-- Expired -->
+            <div class="mb-4">
+                <h5 class="p-2 mb-0 text-white" style="background-color:#2a2a2a;">
+                    Expired Certificates
+                </h5>
+                <nav>
+                    <ul class="pagination">
 
-                    @for (int i = 1; i <= Math.Ceiling(Model.ExpiredTotal / (double)Model.PageSize); i++)
-                    {
-                        <li class="page-item @(i == Model.ExpiredPage ? "active" : "")">
-                            <a class="page-link" asp-page-handler="Data" asp-route-ongoingPage="@Model.OngoingPage"
-                               asp-route-completedPage="@Model.CompletedPage" asp-route-expiredPage="@i">
-                                @i
-                            </a>
-                        </li>
-                    }
+                        @for (int i = 1; i <= Math.Ceiling(Model.ExpiredTotal / (double)Model.PageSize); i++)
+                        {
+                            <li class="page-item @(i == Model.ExpiredPage ? "active" : "")">
+                                <a class="page-link" asp-route-ongoingPage="@Model.OngoingPage"
+                                   asp-route-completedPage="@Model.CompletedPage" asp-route-expiredPage="@i">
+                                    @i
+                                </a>
+                            </li>
+                        }
 
-                </ul>
-            </nav>
-            <table class="table table-sm" style="border:1px solid #2596be; color:#2a2a2a; border-radius: 6px;">
-                <thead style="background-color:#f5f5f5;">
-                    <tr>
-                        <th>Employee</th>
-                        <th>Supervisor</th>
-                        <th>Shift</th>
-                        <th>Production Line / Station</th>
-                        <th>Certification Date</th>
-                        <th>Expiration Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.ExpiredCertificates)
-                    {
+                    </ul>
+                </nav>
+                <table class="table table-sm" style="border:1px solid #2596be; color:#2a2a2a; border-radius: 6px;">
+                    <thead style="background-color:#f5f5f5;">
                         <tr>
-                            <td>@item.Employee</td>
-                            <td>@item.Supervisor</td>
-                            <td>@item.Shift</td>
-                            <td>@item.ProductionLineStation</td>
-                            <td>@item.CertificationDate</td>
-                            <td>@item.ExpirationDate</td>
+                            <th>Employee</th>
+                            <th>Supervisor</th>
+                            <th>Shift</th>
+                            <th>Production Line / Station</th>
+                            <th>Certification Date</th>
+                            <th>Expiration Date</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.ExpiredCertificates)
+                        {
+                            <tr>
+                                <td>@item.Employee</td>
+                                <td>@item.Supervisor</td>
+                                <td>@item.Shift</td>
+                                <td>@item.ProductionLineStation</td>
+                                <td>@item.CertificationDate</td>
+                                <td>@item.ExpirationDate</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
 
-    </main>
+        </main>

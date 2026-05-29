@@ -32,17 +32,7 @@ public class IndexModel : PageModel
         _context = context;
     }
 
-    public void OnGet(int ongoingPage = 1, int completedPage = 1, int expiredPage = 1)
-    {
-        OngoingPage = ongoingPage;
-        CompletedPage = completedPage;
-        ExpiredPage = expiredPage;
-
-        LoadFilters();
-        LoadData();
-    }
-
-    public void OnGetData(
+    public void OnGet(
         int? productionLineId,
         int? stationId,
         int? supervisorId,
