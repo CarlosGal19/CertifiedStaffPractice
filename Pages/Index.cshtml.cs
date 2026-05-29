@@ -78,9 +78,13 @@ public class IndexModel : PageModel
 
         if (supervisorId.HasValue)
         {
+            var supervisor = _context.Supervisors
+                .AsNoTracking()
+                .FirstOrDefault(s => s.SupervisorId == supervisorId.Value);
+
             certifications = certifications.Where(c =>
-                c.ProductionLineStation.ProductionLine.Supervisors
-                    .Any(s => s.SupervisorId == supervisorId.Value));
+                c.Employee.ShiftId == supervisor.ShiftId &&
+                c.ProductionLineStation.ProductionLineId == supervisor.ProductionLineId);
         }
 
         var certificationDtos = certifications
@@ -88,7 +92,9 @@ public class IndexModel : PageModel
             {
                 CertificationId = c.CertificationId,
                 Employee = c.Employee.Name,
-                Supervisor = c.ProductionLineStation.ProductionLine.Supervisors
+                Supervisor = _context.Supervisors
+                    .Where(s => s.ShiftId == c.Employee.ShiftId
+                            && s.ProductionLineId == c.ProductionLineStation.ProductionLineId)
                     .Select(s => s.Name)
                     .FirstOrDefault() ?? "NA",
                 Shift = c.Employee.Shift.Name,
