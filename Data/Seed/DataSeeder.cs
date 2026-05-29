@@ -31,9 +31,9 @@ public class DataSeeder
 
         IEnumerable<Shift> shifts =
         [
-            new() { Name = "Matutino" },
-            new() { Name = "Vespertino" },
-            new() { Name = "Nocturno" }
+            new() { Name = "Morning" },
+            new() { Name = "Evening" },
+            new() { Name = "Night" }
         ];
 
         await _context.Shifts.AddRangeAsync(shifts);
