@@ -54,8 +54,8 @@ Permite filtrar, visualizar y exportar información de certificaciones clasifica
     <ul>
         <li>Clona el proyecto desde GitHub en tu máquina local</li>
     </ul>
-    <pre><code>git clone https://github.com/your-username/CertifiedStaff.git
-cd CertifiedStaff</code></pre>
+    <pre><code>git clone https://github.com/CarlosGal19/CertifiedStaffPractice.git
+cd CertifiedStaffPractice</code></pre>
     <h3>2. Restaurar dependencias</h3>
     <ul>
         <li>Descarga todos los paquetes necesarios de NuGet</li>
