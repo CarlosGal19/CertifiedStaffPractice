@@ -129,6 +129,7 @@ public class IndexModel : PageModel
             .Where(c => c.CertificationDate != null &&
                         c.ExpirationDate.HasValue &&
                         c.ExpirationDate.Value > DateTime.Now)
+            .OrderBy(c => c.CertificationDate)
             .Skip((CompletedPage - 1) * PageSize)
             .Take(PageSize)
             .ToList();
@@ -137,6 +138,7 @@ public class IndexModel : PageModel
             .Where(c => c.CertificationDate != null &&
                         c.ExpirationDate.HasValue &&
                         c.ExpirationDate.Value <= DateTime.Now)
+            .OrderByDescending(c => c.ExpirationDate)
             .Skip((ExpiredPage - 1) * PageSize)
             .Take(PageSize)
             .ToList();

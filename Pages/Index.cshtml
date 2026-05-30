@@ -119,6 +119,7 @@
                         <th>Shift</th>
                         <th>Production Line / Station</th>
                         <th>Training %</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -130,6 +131,14 @@
                             <td>@item.Shift</td>
                             <td>@item.ProductionLineStation</td>
                             <td>@item.TrainingPercentage%</td>
+                            <td>
+                                <a asp-page="/certificates/update"
+                                asp-route-id="@item.CertificationId"
+                                class="btn btn-sm"
+                                style="background-color:#0198DD;color:white;border-radius:8px;">
+                                    Edit
+                                </a>
+                            </td>
                         </tr>
                     }
                 </tbody>
