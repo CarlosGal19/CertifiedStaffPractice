@@ -15,6 +15,7 @@ public class IndexModel : PageModel
     public List<SelectListItem> ProductionLines { get; set; } = new();
     public List<SelectListItem> Stations { get; set; } = new();
     public List<SelectListItem> Supervisors { get; set; } = new();
+    public List<SelectListItem> Shifts { get; set; } = new();
     public List<CertificationDTO> OngoingCertificates { get; set; } = new();
     public List<CertificationDTO> CompletedCertificates { get; set; } = new();
     public List<CertificationDTO> ExpiredCertificates { get; set; } = new();
@@ -37,6 +38,8 @@ public class IndexModel : PageModel
 
     [BindProperty(SupportsGet = true)]
     public int? SupervisorId { get; set; }
+    [BindProperty(SupportsGet = true)]
+    public int? ShiftId { get; set; }
 
     public IndexModel(AppDbContext context)
     {
@@ -124,6 +127,15 @@ public class IndexModel : PageModel
             .Select(s => new SelectListItem
             {
                 Value = s.SupervisorId.ToString(),
+                Text = s.Name
+            })
+            .ToList();
+
+        Shifts = _context.Shifts
+            .Where(s => s.IsActive)
+            .Select(s => new SelectListItem
+            {
+                Value = s.ShiftId.ToString(),
                 Text = s.Name
             })
             .ToList();
@@ -252,6 +264,12 @@ public class IndexModel : PageModel
         {
             certifications = certifications.Where(c =>
                 c.ProductionLineStation.StationId == StationId.Value);
+        }
+
+        if (ShiftId.HasValue)
+        {
+            certifications = certifications.Where(c =>
+                c.Employee.ShiftId == ShiftId);
         }
 
         if (SupervisorId.HasValue)

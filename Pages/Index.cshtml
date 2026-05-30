@@ -62,6 +62,11 @@
                         <option value="">Select a station</option>
                     </select>
 
+                    <select class="form-select" asp-for="ShiftId" asp-items="Model.Shifts"
+                            onchange="document.getElementById('filterForm').submit()">
+                        <option value="">Select a shift</option>
+                    </select>
+
                     <select class="form-select" asp-for="SupervisorId" asp-items="Model.Supervisors"
                             onchange="document.getElementById('filterForm').submit()">
                         <option value="">Select a supervisor</option>
@@ -73,6 +78,7 @@
                 asp-route-ProductionLineId="@Model.ProductionLineId"
                 asp-route-StationId="@Model.StationId"
                 asp-route-SupervisorId="@Model.SupervisorId"
+                asp-route-ShiftId="@Model.ShiftId"
                 class="btn btn-dark w-100">
                     Export all as Excel
                 </a>
