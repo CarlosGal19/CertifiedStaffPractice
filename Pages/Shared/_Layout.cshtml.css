@@ -2,11 +2,11 @@
 for details on configuring this project to bundle and minify static web assets. */
 
 .filters select:hover {
-    border-color: #2596be;
+    border-color: #0198DD;
 }
 
 .form-select:focus {
-    border-color: #2596be;
+    border-color: #0198DD;
     box-shadow: 0 0 4px rgba(37, 150, 190, 0.15);
 }
 
