@@ -103,21 +103,23 @@ public class IndexModel : PageModel
                     c.ProductionLineStation.ProductionLine.Name + " " +
                     c.ProductionLineStation.Station.Name,
                 TrainingPercentage = c.TrainingPercentage,
-                CertificationDate = c.CertificationDate,
-                ExpirationDate = c.ExpirationDate
+                CertificationDate = c.CertificationDate.HasValue ? DateOnly.FromDateTime(c.CertificationDate.Value) : null,
+                ExpirationDate = c.ExpirationDate.HasValue ? DateOnly.FromDateTime(c.ExpirationDate.Value) : null
             });
 
         OngoingTotal = certificationDtos.Count(c => c.CertificationDate == null);
 
+        var now = DateTime.Now;
+
         CompletedTotal = certificationDtos.Count(c =>
             c.CertificationDate != null &&
             c.ExpirationDate.HasValue &&
-            c.ExpirationDate.Value > DateTime.Now);
+            c.ExpirationDate.Value > DateOnly.FromDateTime(now));
 
         ExpiredTotal = certificationDtos.Count(c =>
             c.CertificationDate != null &&
             c.ExpirationDate.HasValue &&
-            c.ExpirationDate.Value <= DateTime.Now);
+            c.ExpirationDate.Value <= DateOnly.FromDateTime(now));
 
         OngoingCertificates = certificationDtos
             .Where(c => c.CertificationDate == null)
@@ -128,7 +130,7 @@ public class IndexModel : PageModel
         CompletedCertificates = certificationDtos
             .Where(c => c.CertificationDate != null &&
                         c.ExpirationDate.HasValue &&
-                        c.ExpirationDate.Value > DateTime.Now)
+                        c.ExpirationDate.Value > DateOnly.FromDateTime(now))
             .OrderBy(c => c.CertificationDate)
             .Skip((CompletedPage - 1) * PageSize)
             .Take(PageSize)
@@ -137,7 +139,7 @@ public class IndexModel : PageModel
         ExpiredCertificates = certificationDtos
             .Where(c => c.CertificationDate != null &&
                         c.ExpirationDate.HasValue &&
-                        c.ExpirationDate.Value <= DateTime.Now)
+                        c.ExpirationDate.Value <= DateOnly.FromDateTime(now))
             .OrderByDescending(c => c.ExpirationDate)
             .Skip((ExpiredPage - 1) * PageSize)
             .Take(PageSize)

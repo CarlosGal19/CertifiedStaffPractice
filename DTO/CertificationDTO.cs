@@ -8,6 +8,6 @@ public class CertificationDTO
     public required string Shift {get; set;}
     public required string ProductionLineStation {get; set;}
     public int? TrainingPercentage {get; set;}
-    public DateTime? CertificationDate {get; set;}
-    public DateTime? ExpirationDate {get; set;}
+    public DateOnly? CertificationDate {get; set;}
+    public DateOnly? ExpirationDate {get; set;}
 }
