@@ -53,59 +53,12 @@ public class IndexModel : PageModel
         ExpiredPage = expiredPage;
 
         LoadFilters();
-        LoadData(ProductionLineId, StationId, SupervisorId);
+        LoadData();
     }
 
-    private void LoadData(
-        int? productionLineId = null,
-        int? stationId = null,
-        int? supervisorId = null)
+    private void LoadData()
     {
-        var certifications = _context.Certifications
-            .AsNoTracking()
-            .Where(c => c.IsActive);
-
-        if (productionLineId.HasValue)
-        {
-            certifications = certifications.Where(c =>
-                c.ProductionLineStation.ProductionLineId == productionLineId.Value);
-        }
-
-        if (stationId.HasValue)
-        {
-            certifications = certifications.Where(c =>
-                c.ProductionLineStation.StationId == stationId.Value);
-        }
-
-        if (supervisorId.HasValue)
-        {
-            var supervisor = _context.Supervisors
-                .AsNoTracking()
-                .FirstOrDefault(s => s.SupervisorId == supervisorId.Value);
-
-            certifications = certifications.Where(c =>
-                c.Employee.ShiftId == supervisor.ShiftId &&
-                c.ProductionLineStation.ProductionLineId == supervisor.ProductionLineId);
-        }
-
-        var certificationDtos = certifications
-            .Select(c => new CertificationDTO
-            {
-                CertificationId = c.CertificationId,
-                Employee = c.Employee.Name,
-                Supervisor = _context.Supervisors
-                    .Where(s => s.ShiftId == c.Employee.ShiftId
-                            && s.ProductionLineId == c.ProductionLineStation.ProductionLineId)
-                    .Select(s => s.Name)
-                    .FirstOrDefault() ?? "NA",
-                Shift = c.Employee.Shift.Name,
-                ProductionLineStation =
-                    c.ProductionLineStation.ProductionLine.Name + " " +
-                    c.ProductionLineStation.Station.Name,
-                TrainingPercentage = c.TrainingPercentage,
-                CertificationDate = c.CertificationDate.HasValue ? DateOnly.FromDateTime(c.CertificationDate.Value) : null,
-                ExpirationDate = c.ExpirationDate.HasValue ? DateOnly.FromDateTime(c.ExpirationDate.Value) : null
-            });
+        var certificationDtos = GetFilteredCertificates();
 
         OngoingTotal = certificationDtos.Count(c => c.CertificationDate == null);
 
@@ -180,6 +133,9 @@ public class IndexModel : PageModel
     {
         using var wb = new XLWorkbook();
 
+        var certificationDtos = GetFilteredCertificates().ToList();
+        var now = DateOnly.FromDateTime(DateTime.Now);
+
         // =========================
         // Ongoing
         // =========================
@@ -193,27 +149,16 @@ public class IndexModel : PageModel
 
         int row = 2;
 
-        var ongoingData = _context.Certifications
-            .Where(c => c.CertificationDate == null && c.IsActive)
-            .Select(c => new
-            {
-                c.Employee.Name,
-                Supervisor = c.Employee.Shift.Supervisors
-                    .Select(s => s.Name)
-                    .FirstOrDefault() ?? "NA",
-                Shift = c.Employee.Shift.Name,
-                LineStation = c.ProductionLineStation.ProductionLine.Name + " " +
-                            c.ProductionLineStation.Station.Name,
-                c.TrainingPercentage
-            })
+        var ongoingData = certificationDtos
+            .Where(c => c.CertificationDate == null)
             .ToList();
 
         foreach (var item in ongoingData)
         {
-            ongoing.Cell(row, 1).Value = item.Name;
+            ongoing.Cell(row, 1).Value = item.Employee;
             ongoing.Cell(row, 2).Value = item.Supervisor;
             ongoing.Cell(row, 3).Value = item.Shift;
-            ongoing.Cell(row, 4).Value = item.LineStation;
+            ongoing.Cell(row, 4).Value = item.ProductionLineStation;
             ongoing.Cell(row, 5).Value = item.TrainingPercentage;
             row++;
         }
@@ -232,33 +177,20 @@ public class IndexModel : PageModel
 
         row = 2;
 
-        var completedData = _context.Certifications
+        var completedData = certificationDtos
             .Where(c => c.CertificationDate != null &&
                         c.ExpirationDate.HasValue &&
-                        c.ExpirationDate.Value > DateTime.Now &&
-                        c.IsActive)
-            .Select(c => new
-            {
-                c.Employee.Name,
-                Supervisor = c.Employee.Shift.Supervisors
-                    .Select(s => s.Name)
-                    .FirstOrDefault() ?? "NA",
-                Shift = c.Employee.Shift.Name,
-                LineStation = c.ProductionLineStation.ProductionLine.Name + " " +
-                            c.ProductionLineStation.Station.Name,
-                c.CertificationDate,
-                c.ExpirationDate
-            })
+                        c.ExpirationDate.Value > now)
             .ToList();
 
         foreach (var item in completedData)
         {
-            completed.Cell(row, 1).Value = item.Name;
+            completed.Cell(row, 1).Value = item.Employee;
             completed.Cell(row, 2).Value = item.Supervisor;
             completed.Cell(row, 3).Value = item.Shift;
-            completed.Cell(row, 4).Value = item.LineStation;
-            completed.Cell(row, 5).Value = item.CertificationDate;
-            completed.Cell(row, 6).Value = item.ExpirationDate;
+            completed.Cell(row, 4).Value = item.ProductionLineStation;
+            completed.Cell(row, 5).Value = item.CertificationDate.ToString();
+            completed.Cell(row, 6).Value = item.ExpirationDate.ToString();
             row++;
         }
 
@@ -276,33 +208,20 @@ public class IndexModel : PageModel
 
         row = 2;
 
-        var expiredData = _context.Certifications
+        var expiredData = certificationDtos
             .Where(c => c.CertificationDate != null &&
                         c.ExpirationDate.HasValue &&
-                        c.ExpirationDate.Value <= DateTime.Now &&
-                        c.IsActive)
-            .Select(c => new
-            {
-                c.Employee.Name,
-                Supervisor = c.Employee.Shift.Supervisors
-                    .Select(s => s.Name)
-                    .FirstOrDefault() ?? "NA",
-                Shift = c.Employee.Shift.Name,
-                LineStation = c.ProductionLineStation.ProductionLine.Name + " " +
-                            c.ProductionLineStation.Station.Name,
-                c.CertificationDate,
-                c.ExpirationDate
-            })
+                        c.ExpirationDate.Value <= now)
             .ToList();
 
         foreach (var item in expiredData)
         {
-            expired.Cell(row, 1).Value = item.Name;
+            expired.Cell(row, 1).Value = item.Employee;
             expired.Cell(row, 2).Value = item.Supervisor;
             expired.Cell(row, 3).Value = item.Shift;
-            expired.Cell(row, 4).Value = item.LineStation;
-            expired.Cell(row, 5).Value = item.CertificationDate;
-            expired.Cell(row, 6).Value = item.ExpirationDate;
+            expired.Cell(row, 4).Value = item.ProductionLineStation;
+            expired.Cell(row, 5).Value = item.CertificationDate.ToString();
+            expired.Cell(row, 6).Value = item.ExpirationDate.ToString();
             row++;
         }
 
@@ -316,4 +235,56 @@ public class IndexModel : PageModel
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             "certifications.xlsx");
             }
+
+    private IQueryable<CertificationDTO> GetFilteredCertificates()
+    {
+        var certifications = _context.Certifications
+            .AsNoTracking()
+            .Where(c => c.IsActive);
+
+        if (ProductionLineId.HasValue)
+        {
+            certifications = certifications.Where(c =>
+                c.ProductionLineStation.ProductionLineId == ProductionLineId.Value);
+        }
+
+        if (StationId.HasValue)
+        {
+            certifications = certifications.Where(c =>
+                c.ProductionLineStation.StationId == StationId.Value);
+        }
+
+        if (SupervisorId.HasValue)
+        {
+            var supervisor = _context.Supervisors
+                .AsNoTracking()
+                .FirstOrDefault(s => s.SupervisorId == SupervisorId.Value);
+
+            certifications = certifications.Where(c =>
+                c.Employee.ShiftId == supervisor!.ShiftId &&
+                c.ProductionLineStation.ProductionLineId == supervisor.ProductionLineId);
+        }
+
+        return certifications.Select(c => new CertificationDTO
+        {
+            CertificationId = c.CertificationId,
+            Employee = c.Employee.Name,
+            Supervisor = _context.Supervisors
+                .Where(s => s.ShiftId == c.Employee.ShiftId
+                        && s.ProductionLineId == c.ProductionLineStation.ProductionLineId)
+                .Select(s => s.Name)
+                .FirstOrDefault() ?? "NA",
+            Shift = c.Employee.Shift.Name,
+            ProductionLineStation =
+                c.ProductionLineStation.ProductionLine.Name + " " +
+                c.ProductionLineStation.Station.Name,
+            TrainingPercentage = c.TrainingPercentage,
+            CertificationDate = c.CertificationDate.HasValue
+                ? DateOnly.FromDateTime(c.CertificationDate.Value)
+                : null,
+            ExpirationDate = c.ExpirationDate.HasValue
+                ? DateOnly.FromDateTime(c.ExpirationDate.Value)
+                : null
+        });
+    }
 }

@@ -70,8 +70,11 @@
                 </form>
 
                 <a asp-page-handler="ExportExcel"
+                asp-route-ProductionLineId="@Model.ProductionLineId"
+                asp-route-StationId="@Model.StationId"
+                asp-route-SupervisorId="@Model.SupervisorId"
                 class="btn btn-dark w-100">
-                    Export as Excel
+                    Export all as Excel
                 </a>
 
             </div>
