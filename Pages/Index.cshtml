@@ -38,6 +38,56 @@
         flex-direction: column;
         gap: 8px; /* 4px arriba + 4px abajo entre elementos */
     }
+
+    .cert-table {
+        border: 1px solid #d8e7f0;
+        border-radius: 10px;
+        overflow: hidden;
+        background: white;
+        box-shadow: 0 2px 8px rgba(0,0,0,.04);
+    }
+
+    .cert-table thead {
+        background: #f7fafc;
+    }
+
+    .cert-table thead th {
+        font-size: .85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .4px;
+        color: #5c6770;
+        border-bottom: 2px solid #0198DD;
+        padding: 14px 12px;
+        white-space: nowrap;
+    }
+
+    .cert-table tbody td {
+        padding: 14px 12px;
+        vertical-align: middle;
+        border-color: #eef2f5;
+    }
+
+    .cert-table tbody tr {
+        transition: all .15s ease-in-out;
+    }
+
+    .cert-table tbody tr:hover {
+        background-color: #f8fbfd;
+    }
+
+    .cert-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .training-badge {
+        background: rgba(1,152,221,.12);
+        color: #0198DD;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-weight: 600;
+        font-size: .85rem;
+    }
 </style>
 
 <div class="d-flex gap-4 align-items-start">
@@ -120,7 +170,7 @@
                 </ul>
             </nav>
 
-            <table class="table table-sm" style="border:1px solid #0198DD; color:#2a2a2a; border-radius: 6px;">
+            <table class="table cert-table mb-0">
                 <thead style="background-color:#f5f5f5;">
                     <tr>
                         <th>Employee</th>
@@ -147,7 +197,11 @@
                             <td>@item.Supervisor</td>
                             <td>@item.Shift</td>
                             <td>@item.ProductionLineStation</td>
-                            <td>@item.TrainingPercentage%</td>
+                            <td>
+                                <span class="training-badge">
+                                    @item.TrainingPercentage%
+                                </span>
+                            </td>
                             <td>
                                 <a asp-page="/certificates/update"
                                 asp-route-id="@item.CertificationId"
@@ -183,7 +237,7 @@
                 </ul>
             </nav>
 
-            <table class="table table-sm" style="border:1px solid #0198DD; color:#2a2a2a; border-radius: 6px;">
+            <table class="table cert-table mb-0">
                 <thead style="background-color:#f5f5f5;">
                     <tr>
                         <th>Employee</th>
@@ -238,7 +292,7 @@
 
                 </ul>
             </nav>
-            <table class="table table-sm" style="border:1px solid #0198DD; color:#2a2a2a; border-radius: 6px;">
+            <table class="table cert-table mb-0">
                 <thead style="background-color:#f5f5f5;">
                     <tr>
                         <th>Employee</th>
