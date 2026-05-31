@@ -135,7 +135,15 @@
                     @foreach (var item in Model.OngoingCertificates)
                     {
                         <tr>
-                            <td>@item.Employee</td>
+                            <td>
+                                <a asp-page="/employees/info"
+                                asp-route-id="@item.EmployeeId"
+                                class="btn btn-sm"
+                                style="background-color:#0198DD;color:white;border-radius:8px;"
+                                >
+                                @item.Employee
+                                </a>
+                            </td>
                             <td>@item.Supervisor</td>
                             <td>@item.Shift</td>
                             <td>@item.ProductionLineStation</td>
@@ -190,7 +198,15 @@
                     @foreach (var item in Model.CompletedCertificates)
                     {
                         <tr>
-                            <td>@item.Employee</td>
+                            <td>
+                                <a asp-page="/employees/info"
+                                asp-route-id="@item.EmployeeId"
+                                class="btn btn-sm"
+                                style="background-color:#0198DD;color:white;border-radius:8px;"
+                                >
+                                @item.Employee
+                                </a>
+                            </td>
                             <td>@item.Supervisor</td>
                             <td>@item.Shift</td>
                             <td>@item.ProductionLineStation</td>
@@ -237,7 +253,15 @@
                     @foreach (var item in Model.ExpiredCertificates)
                     {
                         <tr>
-                            <td>@item.Employee</td>
+                            <td>
+                                <a asp-page="/employees/info"
+                                asp-route-id="@item.EmployeeId"
+                                class="btn btn-sm"
+                                style="background-color:#0198DD;color:white;border-radius:8px;"
+                                >
+                                @item.Employee
+                                </a>
+                            </td>
                             <td>@item.Supervisor</td>
                             <td>@item.Shift</td>
                             <td>@item.ProductionLineStation</td>

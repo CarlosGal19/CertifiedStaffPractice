@@ -3,6 +3,7 @@ namespace CertifiedStaff.DTO;
 public class CertificationDTO
 {
     public int CertificationId {get; set;}
+    public required int EmployeeId {get; set;}
     public required string Employee {get; set;}
     public required string Supervisor {get; set;}
     public required string Shift {get; set;}

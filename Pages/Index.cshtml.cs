@@ -286,6 +286,7 @@ public class IndexModel : PageModel
         return certifications.Select(c => new CertificationDTO
         {
             CertificationId = c.CertificationId,
+            EmployeeId = c.EmployeeId,
             Employee = c.Employee.Name,
             Supervisor = _context.Supervisors
                 .Where(s => s.ShiftId == c.Employee.ShiftId
