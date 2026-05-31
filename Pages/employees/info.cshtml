@@ -1,0 +1,256 @@
+@page
+@model EmployeesInfoModel
+
+<style>
+    .section-header {
+        background-color: #2a2a2a;
+        color: white;
+        padding: 12px 16px;
+        margin-bottom: 0;
+    }
+
+    .employee-card {
+        border-left: 5px solid #0198DD;
+    }
+
+    .info-label {
+        color: #6c757d;
+        font-size: .85rem;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+    }
+
+    .info-value {
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+
+    .cert-table {
+        border: 1px solid #d8e7f0;
+        border-radius: 10px;
+        overflow: hidden;
+        background: white;
+        box-shadow: 0 2px 8px rgba(0,0,0,.04);
+        margin-bottom: 0;
+    }
+
+    .cert-table thead {
+        background: #f7fafc;
+    }
+
+    .cert-table thead th {
+        font-size: .85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .4px;
+        color: #5c6770;
+        border-bottom: 2px solid #0198DD;
+        padding: 14px 12px;
+        white-space: nowrap;
+    }
+
+    .cert-table tbody td {
+        padding: 14px 12px;
+        vertical-align: middle;
+        border-color: #eef2f5;
+    }
+
+    .cert-table tbody tr {
+        transition: all .15s ease-in-out;
+    }
+
+    .cert-table tbody tr:hover {
+        background-color: #f8fbfd;
+    }
+
+    .cert-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .training-badge {
+        background: rgba(1,152,221,.12);
+        color: #0198DD;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-weight: 600;
+        font-size: .85rem;
+    }
+
+    .status-badge {
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: .85rem;
+        font-weight: 600;
+    }
+
+    .status-certified {
+        background: rgba(25,135,84,.12);
+        color: #198754;
+    }
+
+    .status-expired {
+        background: rgba(220,53,69,.12);
+        color: #dc3545;
+    }
+
+    .status-training {
+        background: rgba(255,193,7,.18);
+        color: #997404;
+    }
+</style>
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="mb-0">@Model.EmployeeInfo.Employee</h2>
+            <small class="text-muted">
+                Employee Information
+            </small>
+        </div>
+
+        <a asp-page="/Index"
+           class="btn btn-dark">
+            Back
+        </a>
+
+    </div>
+
+    <div class="card shadow-sm border-0 employee-card mb-4">
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-4">
+                    <div class="info-label">
+                        Employee ID
+                    </div>
+
+                    <div class="info-value">
+                        @Model.EmployeeInfo.EmployeeId
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="info-label">
+                        Employee
+                    </div>
+
+                    <div class="info-value">
+                        @Model.EmployeeInfo.Employee
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="info-label">
+                        Shift
+                    </div>
+
+                    <div class="info-value">
+                        @Model.EmployeeInfo.Shift
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+
+        <h5 class="section-header">
+            Employee Certifications
+        </h5>
+
+        <div class="card-body p-0">
+
+            @if (Model.EmployeeInfo.Certificates != null &&
+                 Model.EmployeeInfo.Certificates.Any())
+            {
+                <table class="table table-sm mb-0 certificate-table">
+
+                    <thead style="background-color:#f5f5f5;">
+                        <tr>
+                            <th>Production Line / Station</th>
+                            <th>Training %</th>
+                            <th>Certification Date</th>
+                            <th>Expiration Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var certificate in Model.EmployeeInfo.Certificates)
+                        {
+                            bool isCertified =
+                                certificate.TrainingPercentage >= 100 &&
+                                certificate.CertificationDate.HasValue;
+
+                            bool isExpired =
+                                certificate.ExpirationDate.HasValue &&
+                                certificate.ExpirationDate.Value < DateOnly.FromDateTime(DateTime.Today);
+
+                            <tr>
+
+                                <td>
+                                    @certificate.ProductionLineStation
+                                </td>
+
+                                <td>
+                                    <span class="training-badge">
+                                        @certificate.TrainingPercentage%
+                                    </span>
+                                </td>
+
+                                <td>
+                                    @(certificate.CertificationDate?.ToString("dd/MM/yyyy") ?? "-")
+                                </td>
+
+                                <td>
+                                    @(certificate.ExpirationDate?.ToString("dd/MM/yyyy") ?? "-")
+                                </td>
+
+                                <td>
+
+                                    @if (isExpired)
+                                    {
+                                        <span class="status-badge status-expired">
+                                            Expired
+                                        </span>
+                                    }
+                                    else if (isCertified)
+                                    {
+                                        <span class="status-badge status-certified">
+                                            Certified
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-badge status-training">
+                                            In Training
+                                        </span>
+                                    }
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+            }
+            else
+            {
+                <div class="p-4 text-center text-muted">
+                    No certifications found for this employee.
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+</div>
